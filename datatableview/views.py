@@ -140,7 +140,7 @@ class DatatableMixin(MultipleObjectMixin):
                             field_queries = [{component_name + '__icontains': term}]
                         elif isinstance(field, models.DateField):
                             try:
-                                date_obj = dateutil.parser.parse(term)
+                                date_obj = dateutil.parser.parse(term, dayfirst=True)
                             except ValueError:
                                 # This exception is theoretical, but it doesn't seem to raise.
                                 pass
@@ -195,7 +195,7 @@ class DatatableMixin(MultipleObjectMixin):
                     queries.append(reduce(operator.or_, term_queries))
             # Apply the logical AND of all term inspections
             if len(queries):
-                queryset = queryset.filter(reduce(operator.and_, queries))
+                queryset = queryset.filter(reduce(operator.and_, queries)).distinct()
 
         # TODO: Remove "and not searches" from this conditional, since manual searches won't be done
         if not sort_fields and not searches:
